@@ -36,6 +36,82 @@
                 "policy_number": {
                   "type": "string",
                   "description": "Unique policy number"
+                },
+                "insurance_type": {
+                  "type": "string",
+                  "description": "Type of insurance policy",
+                  "enum": ["health", "life", "auto", "home", "property"]
+                },
+                "marital_status": {
+                  "type": "string",
+                  "description": "Marital status of the policyholder",
+                  "enum": ["single", "married", "divorced", "widowed"]
+                },
+                "employment_status": {
+                  "type": "string",
+                  "description": "Current employment status",
+                  "enum": ["employed", "unemployed", "self-employed", "retired"]
+                },
+                "risk_segmentation": {
+                  "type": "string",
+                  "description": "Risk category of the policyholder",
+                  "enum": ["low", "medium", "high"]
+                },
+                "house_type": {
+                  "type": "string",
+                  "description": "Type of residence",
+                  "enum": ["apartment", "house", "condo", "other"]
+                },
+                "social_class": {
+                  "type": "string",
+                  "description": "Social class category",
+                  "enum": ["lower", "middle", "upper"]
+                },
+                "customer_education_level": {
+                  "type": "string",
+                  "description": "Education level of the policyholder",
+                  "enum": ["high_school", "bachelor", "master", "doctorate"]
+                },
+                "claim_status": {
+                  "type": "string",
+                  "description": "Current status of the claim",
+                  "enum": ["pending", "approved", "rejected", "suspicious"]
+                },
+                "incident_severity": {
+                  "type": "string",
+                  "description": "Severity level of the incident",
+                  "enum": ["low", "medium", "high", "critical"]
+                },
+                "premium_amount": {
+                  "type": "number",
+                  "description": "Monthly premium amount"
+                },
+                "tenure": {
+                  "type": "integer",
+                  "description": "Number of years with the insurance company"
+                },
+                "no_of_family_members": {
+                  "type": "integer",
+                  "description": "Number of family members covered"
+                },
+                "days_to_loss": {
+                  "type": "integer",
+                  "description": "Days between policy start and loss incident"
+                },
+                "claim_premium_ratio": {
+                  "type": "number",
+                  "description": "Ratio of claim amount to premium amount"
+                },
+                "incident_hour_of_the_day": {
+                  "type": "integer",
+                  "description": "Hour of the day when incident occurred (0-23)",
+                  "minimum": 0,
+                  "maximum": 23
+                },
+                "any_injury": {
+                  "type": "integer",
+                  "description": "Whether there were any injuries (0 or 1)",
+                  "enum": [0, 1]
                 }
               }
             }
@@ -48,10 +124,19 @@
               "type": "object",
               "properties": {
                 "fraud_probability": {
-                  "type": "number"
+                  "type": "number",
+                  "description": "Probability of fraud (0-1)"
                 },
                 "is_high_risk": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Whether the claim is considered high risk"
+                },
+                "risk_factors": {
+                  "type": "array",
+                  "description": "List of identified risk factors",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }

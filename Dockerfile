@@ -7,6 +7,9 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
+# Use environment variable for port
+ENV PORT=10000
+
 EXPOSE 10000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"] 

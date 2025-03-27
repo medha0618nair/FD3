@@ -1,0 +1,93 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Insurance Fraud Detection API",
+    "description": "API for detecting potential insurance fraud",
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "schemes": ["https"],
+  "paths": {
+    "/predict": {
+      "post": {
+        "tags": ["Predictions"],
+        "summary": "Predict fraud probability for an insurance claim",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["age", "income", "claim_amount", "policy_number"],
+              "properties": {
+                "age": {
+                  "type": "integer",
+                  "description": "Age of the policyholder"
+                },
+                "income": {
+                  "type": "number",
+                  "description": "Annual income of the policyholder"
+                },
+                "claim_amount": {
+                  "type": "number",
+                  "description": "Amount being claimed"
+                },
+                "policy_number": {
+                  "type": "string",
+                  "description": "Unique policy number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful prediction",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fraud_probability": {
+                  "type": "number"
+                },
+                "is_high_risk": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Check API health status",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "healthy"
+                },
+                "model_loaded": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 

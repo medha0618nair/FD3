@@ -2,12 +2,19 @@ from flask import Flask, request, jsonify
 from model import InsuranceFraudDetector
 import pandas as pd
 import os
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
 # Load the trained model
+logger.info("Loading the fraud detection model...")
 fraud_detector = InsuranceFraudDetector()
 fraud_detector.load_model('trained_fraud_detector.joblib')
+logger.info("Model loaded successfully!")
 
 @app.route('/')
 def home():
@@ -30,36 +37,46 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        logger.info("Received prediction request")
         # Get JSON data from request
         data = request.get_json()
+        logger.info(f"Request data: {data}")
         
         if not data:
+            logger.error("No data provided in request")
             return jsonify({
                 'error': 'No data provided. Please send JSON data.'
             }), 400
         
         # Convert single claim to DataFrame
         df = pd.DataFrame([data])
+        logger.info(f"Created DataFrame with columns: {df.columns.tolist()}")
         
         # Ensure all required columns are present
         required_columns = ['age', 'income', 'claim_amount', 'policy_number']
         missing_columns = [col for col in required_columns if col not in df.columns]
         
         if missing_columns:
+            logger.error(f"Missing required columns: {missing_columns}")
             return jsonify({
                 'error': f'Missing required fields: {", ".join(missing_columns)}'
             }), 400
         
         # Make prediction
+        logger.info("Making prediction...")
         fraud_probability = fraud_detector.predict_fraud(df)[0]
+        logger.info(f"Prediction completed. Fraud probability: {fraud_probability}")
         
         # Return prediction
-        return jsonify({
+        response = {
             'fraud_probability': float(fraud_probability),
             'is_high_risk': bool(fraud_probability > 0.7)
-        })
+        }
+        logger.info(f"Sending response: {response}")
+        return jsonify(response)
     
     except Exception as e:
+        logger.error(f"Error processing request: {str(e)}", exc_info=True)
         return jsonify({
             'error': str(e)
         }), 500

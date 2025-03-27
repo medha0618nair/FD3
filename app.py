@@ -3,12 +3,23 @@ from model import InsuranceFraudDetector
 import pandas as pd
 import os
 import logging
+from flask_swagger_ui import get_swaggerui_blueprint
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+SWAGGER_URL = '/docs'
+API_URL = '/static/swagger.json'
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Insurance Fraud Detection API"
+    }
+)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 # Load the trained model
 logger.info("Loading the fraud detection model...")
@@ -32,10 +43,62 @@ def home():
         "policy_number": "12345"
       }'
     </pre>
+    <p>Status: API is running</p>
+    <p>API Documentation: <a href="/docs">/docs</a></p>
     """
+
+@app.route('/health')
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'model_loaded': True
+    })
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    """
+    Predict fraud probability for an insurance claim
+    ---
+    tags:
+      - Predictions
+    parameters:
+      - in: body
+        name: body
+        schema:
+          type: object
+          required:
+            - age
+            - income
+            - claim_amount
+            - policy_number
+          properties:
+            age:
+              type: integer
+              description: Age of the policyholder
+            income:
+              type: number
+              description: Annual income of the policyholder
+            claim_amount:
+              type: number
+              description: Amount being claimed
+            policy_number:
+              type: string
+              description: Unique policy number
+    responses:
+      200:
+        description: Successful prediction
+        schema:
+          type: object
+          properties:
+            fraud_probability:
+              type: number
+            is_high_risk:
+              type: boolean
+      400:
+        description: Invalid input
+      500:
+        description: Server error
+    """
     try:
         logger.info("Received prediction request")
         # Get JSON data from request
